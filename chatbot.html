@@ -196,7 +196,7 @@
     <textarea id="input" rows="1" placeholder="Type your question" maxlength="1000"></textarea>
     <button class="send" id="send" type="submit">Send</button>
   </form>
-  <footer>Demo system. MediSupply Hub is a fictional company and all prices are invented. Replies are written by an AI assistant.</footer>
+  <footer>Replies are written by an AI assistant.</footer>
 </div>
 
 <script>
@@ -267,7 +267,7 @@ function addMessage(role, text, extraNote) {
 function showTyping() {
   const el = document.createElement('div');
   el.className = 'typing';
-  el.innerHTML = 'Preparing your answer <span>.</span><span>.</span><span>.</span>';
+  el.innerHTML = 'Typing <span>.</span><span>.</span><span>.</span>';
   log.appendChild(el);
   log.scrollTop = log.scrollHeight;
   return el;
