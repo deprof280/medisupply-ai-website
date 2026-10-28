@@ -10,7 +10,7 @@ let chatOpener = null;
 
 function setChatOpen(open) {
   launcher.setAttribute('aria-expanded', String(open));
-  launcher.setAttribute('aria-label', open ? 'Close chat with MediSupply AI' : 'Open chat with MediSupply AI');
+  launcher.setAttribute('aria-label', open ? 'Close chat with MediSupply Hub' : 'Open chat with MediSupply Hub');
   chatPanel.setAttribute('aria-hidden', String(!open));
   chatPanel.inert = !open;
   chatPanel.classList.toggle('is-open', open);
