@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MediSupply Hub: Sales assistant</title>
+<style>
+  :root {
+    --ink: #12355B;
+    --ink-soft: #2B4F78;
+    --paper: #FFFFFF;
+    --wall: #EDF1F4;
+    --line: #C9D3DC;
+    --amber: #F2B01E;
+    --text: #1B2733;
+    --muted: #566676;
+    --error: #A12D2D;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+    background: var(--wall);
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+  }
+  .app {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 760px;
+    height: 100vh;
+    height: 100dvh;
+    background: var(--paper);
+    border-left: 1px solid var(--line);
+    border-right: 1px solid var(--line);
+  }
+
+  /* Header: a ward-corridor sign */
+  header {
+    background: var(--ink);
+    color: #fff;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 4px solid var(--amber);
+  }
+  .brand { font-size: 1.15rem; font-weight: 650; letter-spacing: .01em; }
+  .tagline { margin: 2px 0 0; font-size: .85rem; color: #C9D8E8; }
+  .new-chat {
+    background: transparent;
+    color: #fff;
+    border: 1px solid #7C97B4;
+    border-radius: 6px;
+    padding: 7px 12px;
+    font: inherit;
+    font-size: .85rem;
+    cursor: pointer;
+  }
+  .new-chat:hover { background: var(--ink-soft); }
+
+  /* Optional details */
+  details {
+    border-bottom: 1px solid var(--line);
+    background: #F7F9FB;
+    padding: 0 18px;
+  }
+  summary { cursor: pointer; padding: 10px 0; font-size: .9rem; color: var(--ink); font-weight: 600; }
+  .details-body { padding: 0 0 14px; }
+  .details-body p { margin: 0 0 10px; font-size: .85rem; color: var(--muted); max-width: 62ch; }
+  .fields { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .fields label { display: block; font-size: .8rem; color: var(--muted); margin-bottom: 3px; }
+  .fields input {
+    width: 100%; font: inherit; font-size: .9rem; padding: 8px 10px;
+    border: 1px solid var(--line); border-radius: 6px; background: #fff; color: var(--text);
+  }
+
+  /* Conversation */
+  #log {
+    flex: 1;
+    overflow-y: auto;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .msg { max-width: 86%; line-height: 1.5; font-size: .95rem; }
+  .msg p { margin: 0 0 8px; white-space: pre-line; }
+  .msg p:last-child { margin-bottom: 0; }
+  .msg.user {
+    align-self: flex-end;
+    background: var(--ink);
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 14px 14px 3px 14px;
+  }
+  .msg.bot {
+    align-self: flex-start;
+    background: #fff;
+    border: 1px solid var(--line);
+    padding: 10px 14px;
+    border-radius: 14px 14px 14px 3px;
+  }
+  .msg.error {
+    align-self: flex-start;
+    color: var(--error);
+    font-size: .88rem;
+    border-left: 3px solid var(--error);
+    padding: 4px 10px;
+  }
+  .note { margin: 6px 0 0; font-size: .8rem; color: var(--muted); }
+
+  /* The quotation is shown as a ledger slip */
+  .ledger {
+    margin: 4px 0 10px;
+    padding: 10px 12px;
+    background: #F7F9FB;
+    border-left: 4px solid var(--amber);
+    font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+    font-size: .82rem;
+    line-height: 1.55;
+    white-space: pre-wrap;
+    overflow-x: auto;
+  }
+
+  .typing { align-self: flex-start; color: var(--muted); font-size: .88rem; padding: 4px 2px; }
+  .typing span { display: inline-block; animation: pulse 1.2s infinite; }
+  .typing span:nth-child(2) { animation-delay: .2s; }
+  .typing span:nth-child(3) { animation-delay: .4s; }
+  @keyframes pulse { 0%, 80%, 100% { opacity: .25; } 40% { opacity: 1; } }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    font: inherit; font-size: .85rem; color: var(--ink);
+    background: #fff; border: 1px solid var(--ink); border-radius: 999px;
+    padding: 6px 12px; cursor: pointer;
+  }
+  .chip:hover { background: #EAF0F6; }
+
+  /* Composer */
+  form {
+    display: flex; gap: 10px; align-items: flex-end;
+    padding: 12px 18px;
+    border-top: 1px solid var(--line);
+    background: #fff;
+  }
+  textarea {
+    flex: 1; resize: none; font: inherit; font-size: .95rem;
+    padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px;
+    max-height: 140px; min-height: 44px; color: var(--text);
+  }
+  button.send {
+    background: var(--amber); color: var(--ink); border: 0; border-radius: 8px;
+    padding: 0 20px; height: 44px; font: inherit; font-weight: 650; cursor: pointer;
+  }
+  button.send:disabled { opacity: .5; cursor: not-allowed; }
+  footer { padding: 8px 18px 12px; font-size: .78rem; color: var(--muted); background: #fff; }
+
+  :focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
+  @media (max-width: 560px) {
+    .fields { grid-template-columns: 1fr; }
+    .msg { max-width: 94%; }
+  }
+  @media (prefers-reduced-motion: reduce) { .typing span { animation: none; opacity: 1; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div>
+      <div class="brand">MediSupply Hub</div>
+      <p class="tagline">Sales assistant: products, quotations and delivery</p>
+    </div>
+    <button class="new-chat" id="newChat" type="button">New chat</button>
+  </header>
+
+  <details>
+    <summary>Your details (optional)</summary>
+    <div class="details-body">
+      <p>Add an email or phone number so we can recognise you if you write to us again by email or WhatsApp.</p>
+      <div class="fields">
+        <div><label for="name">Name</label><input id="name" autocomplete="name"></div>
+        <div><label for="email">Email</label><input id="email" type="email" autocomplete="email"></div>
+        <div><label for="phone">Phone</label><input id="phone" type="tel" autocomplete="tel"></div>
+      </div>
+    </div>
+  </details>
+
+  <main id="log" aria-live="polite" aria-label="Conversation"></main>
+
+  <form id="composer">
+    <label for="input" hidden>Your message</label>
+    <textarea id="input" rows="1" placeholder="Type your question" maxlength="1000"></textarea>
+    <button class="send" id="send" type="submit">Send</button>
+  </form>
+  <footer>Demo system. MediSupply Hub is a fictional company and all prices are invented. Replies are written by an AI assistant.</footer>
+</div>
+
+<script>
+/* ---------- Settings: change the address when the workflow goes live ---------- */
+const CONFIG = {
+  webhookUrl: 'https://slacked-reoccur-acclimate.ngrok-free.dev/webhook/website-chat',
+  timeoutMs: 90000
+};
+
+/* ---------- Helpers ---------- */
+const $ = id => document.getElementById(id);
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+};
+function uid(prefix) {
+  const a = new Uint8Array(8);
+  crypto.getRandomValues(a);
+  return prefix + Array.from(a, b => b.toString(16).padStart(2, '0')).join('');
+}
+
+let sessionId = store.get('msh_session') || uid('sess_');
+store.set('msh_session', sessionId);
+
+['name', 'email', 'phone'].forEach(f => {
+  const saved = store.get('msh_' + f);
+  if (saved) $(f).value = saved;
+  $(f).addEventListener('change', () => store.set('msh_' + f, $(f).value.trim()));
+});
+
+/* ---------- Rendering (text only, never HTML) ---------- */
+const log = $('log');
+
+function addParagraphs(container, text) {
+  text.split(/\n{2,}/).map(s => s.trim()).filter(Boolean).forEach(p => {
+    const el = document.createElement('p');
+    el.textContent = p;
+    container.appendChild(el);
+  });
+}
+
+function renderReply(container, text) {
+  const m = text.match(/QUOTATION\n[\s\S]*?\nSubtotal:[^\n]*/);
+  if (!m) { addParagraphs(container, text); return; }
+  addParagraphs(container, text.slice(0, m.index));
+  const slip = document.createElement('pre');
+  slip.className = 'ledger';
+  slip.textContent = m[0];
+  container.appendChild(slip);
+  addParagraphs(container, text.slice(m.index + m[0].length));
+}
+
+function addMessage(role, text, extraNote) {
+  const el = document.createElement('div');
+  el.className = 'msg ' + role;
+  if (role === 'bot') renderReply(el, text); else addParagraphs(el, text);
+  if (extraNote) {
+    const n = document.createElement('p');
+    n.className = 'note';
+    n.textContent = extraNote;
+    el.appendChild(n);
+  }
+  log.appendChild(el);
+  log.scrollTop = log.scrollHeight;
+  return el;
+}
+
+function showTyping() {
+  const el = document.createElement('div');
+  el.className = 'typing';
+  el.innerHTML = 'Preparing your answer <span>.</span><span>.</span><span>.</span>';
+  log.appendChild(el);
+  log.scrollTop = log.scrollHeight;
+  return el;
+}
+
+function showStart() {
+  addMessage('bot',
+    'Hello. Ask about our equipment, prices, delivery or returns. For a quotation, tell me the products, quantities and delivery location.');
+  const chips = document.createElement('div');
+  chips.className = 'chips';
+  chips.id = 'chips';
+  ['Do you deliver to Enugu?', 'I need a quotation for 2 patient monitors delivered to Lagos', 'What is your return policy?']
+    .forEach(q => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'chip';
+      b.textContent = q;
+      b.addEventListener('click', () => submit(q));
+      chips.appendChild(b);
+    });
+  log.appendChild(chips);
+}
+
+/* ---------- Sending ---------- */
+let busy = false;
+const queuedProductEnquiries = [];
+
+async function submit(text) {
+  text = String(text || '').trim();
+  if (!text || busy) return;
+  busy = true;
+  $('send').disabled = true;
+  const chips = $('chips'); if (chips) chips.remove();
+
+  addMessage('user', text);
+  $('input').value = '';
+  autosize();
+  const typing = showTyping();
+
+  const body = { session_id: sessionId, message_id: uid('web_'), message: text };
+  ['name', 'email', 'phone'].forEach(f => { const v = $(f).value.trim(); if (v) body[f] = v; });
+
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), CONFIG.timeoutMs);
+
+  try {
+    const res = await fetch(CONFIG.webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      signal: ctrl.signal
+    });
+    let data = null;
+    try { data = await res.json(); } catch (e) {}
+
+    if (res.status === 400) throw new Error('Your message could not be read. Check that it is not empty and try again.');
+    if (!res.ok) throw new Error('The assistant is busy right now. Wait a minute and send your message again.');
+
+    const reply = data && typeof data.reply === 'string' && data.reply.trim()
+      ? data.reply
+      : 'Your message was received. A member of our team will reply shortly.';
+    typing.remove();
+    addMessage('bot', reply, data && data.needs_human ? 'Passed to our team for follow-up.' : null);
+  } catch (err) {
+    typing.remove();
+    const msg = err.name === 'AbortError'
+      ? 'The answer is taking too long. Send your message again.'
+      : (err.message && !/fetch|network/i.test(err.message)
+          ? err.message
+          : 'Could not reach the server. Check your connection and send your message again.');
+    addMessage('error', msg);
+    $('input').value = text;
+    autosize();
+  } finally {
+    clearTimeout(timer);
+    busy = false;
+    $('send').disabled = false;
+    $('input').focus();
+    const queuedEnquiry = queuedProductEnquiries.shift();
+    if (queuedEnquiry) setTimeout(() => submit(queuedEnquiry), 0);
+  }
+}
+
+/* ---------- Composer behaviour ---------- */
+function autosize() {
+  const t = $('input');
+  t.style.height = 'auto';
+  t.style.height = Math.min(t.scrollHeight, 140) + 'px';
+}
+$('input').addEventListener('input', autosize);
+$('input').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submit($('input').value); }
+});
+$('composer').addEventListener('submit', e => { e.preventDefault(); submit($('input').value); });
+
+window.addEventListener('message', event => {
+  if (event.origin !== window.location.origin) return;
+  const data = event.data;
+  if (!data || data.type !== 'medisupply:product-enquiry') return;
+  if (typeof data.productId !== 'string' || typeof data.productName !== 'string') return;
+  const message = `What is the product name?\n\nProduct name: ${data.productName}\n\nProduct ID: ${data.productId}`;
+  if (busy) {
+    queuedProductEnquiries.push(message);
+    return;
+  }
+  submit(message);
+});
+
+$('newChat').addEventListener('click', () => {
+  if (busy) return;
+  sessionId = uid('sess_');
+  store.set('msh_session', sessionId);
+  log.innerHTML = '';
+  showStart();
+});
+
+showStart();
+</script>
+</body>
+</html>
