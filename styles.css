@@ -174,7 +174,27 @@ h1, h2, h3, p { margin-top: 0; }
 .footer-wordmark strong { color: var(--navy-soft); }
 .footer-wordmark .brand-mark { width: 26px; height: 26px; border-radius: 7px; font-size: 22px; }
 .site-footer p { margin: 0; }
+.footer-policy-link { color: #536a7d; text-decoration: underline; text-underline-offset: 3px; }
+.footer-policy-link:hover { color: var(--navy); }
 .site-footer > span { white-space: nowrap; }
+
+.policy-page { min-height: 100vh; background: #f7f9fa; }
+.policy-header { min-height: 78px; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 14px max(6vw, calc((100vw - 1060px) / 2)); border-bottom: 1px solid var(--line); background: #fff; }
+.policy-header .wordmark { color: var(--navy); }
+.policy-header .wordmark strong { color: var(--navy-soft); }
+.policy-home-link { color: var(--navy); font-size: 12px; font-weight: 700; }
+.policy-home-link:hover { text-decoration: underline; text-underline-offset: 4px; }
+.policy-main { width: min(100% - 40px, 860px); margin: 54px auto 80px; padding: clamp(24px, 5vw, 56px); border: 1px solid var(--line); border-radius: 10px; background: #fff; box-shadow: 0 12px 40px #12355b0b; }
+.policy-eyebrow { margin-bottom: 12px; color: #84600c; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; }
+.policy-main h1 { margin-bottom: 12px; color: var(--navy); font: 800 clamp(34px, 6vw, 48px)/1.1 var(--display); letter-spacing: -1.5px; }
+.policy-updated { margin-bottom: 30px; color: var(--muted); font-size: 12px; }
+.policy-intro { padding: 18px 20px; border-left: 3px solid var(--amber); background: #f5f8fa; color: #3c5266; font-size: 14px; line-height: 1.8; }
+.policy-main h2 { margin: 34px 0 10px; color: var(--navy); font: 700 19px/1.35 var(--display); }
+.policy-main p, .policy-main li { color: #435568; font-size: 14px; line-height: 1.8; }
+.policy-main ul { padding-left: 22px; }
+.policy-main li + li { margin-top: 6px; }
+.policy-contact { margin-top: 35px; padding-top: 23px; border-top: 1px solid var(--line); }
+.policy-footer { padding: 22px 20px; color: #647789; text-align: center; font-size: 11px; }
 
 .chat-launcher { position: fixed; right: 25px; bottom: 22px; z-index: 8; min-height: 56px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 0 20px; border: 0; border-radius: 30px; color: #fff; background: var(--navy); box-shadow: 0 7px 25px #0c294a38; cursor: pointer; transition: transform .2s ease, background .2s ease; }
 .chat-launcher:hover { transform: translateY(-2px); background: #1c4977; }
@@ -255,7 +275,11 @@ body.chat-open { overflow: hidden; }
   .contact-banner h2 { font-size: 30px; }
   .site-footer { min-height: 115px; display: grid; grid-template-columns: 1fr auto; gap: 5px 10px; padding: 20px 24px; }
   .site-footer p { grid-column: 1; grid-row: 2; }
+  .footer-policy-link { grid-column: 2; grid-row: 1; justify-self: end; }
   .site-footer > span { grid-column: 2; grid-row: 2; }
+  .policy-header { min-height: 66px; padding: 12px 20px; }
+  .policy-main { width: calc(100% - 28px); margin: 22px auto 40px; padding: 24px 20px; }
+  .policy-main p, .policy-main li { font-size: 13px; }
   .chat-launcher { right: 15px; bottom: 14px; min-height: 52px; padding: 0 17px; }
   .chat-overlay { padding: 3vh 3vw; }
   .chat-dialog { width: 92vw; height: 90vh; min-height: 0; border-radius: 9px; }
